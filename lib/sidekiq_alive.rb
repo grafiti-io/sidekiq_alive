@@ -20,6 +20,7 @@ module SidekiqAlive
           @server_pid = fork do
             sa::Server.run!
           end
+          Process.detach @server_pid
           sa.logger.info(successful_startup_text)
         end
       end
@@ -28,6 +29,7 @@ module SidekiqAlive
         SidekiqAlive.unregister_current_instance
       end
       sq_config.on(:shutdown) do
+        sa.logger.warn 'SHUTTING DOWN SIDEKIQALIVE'
         Process.kill('TERM', @server_pid) unless @server_pid.nil?
         Process.wait(@server_pid) unless @server_pid.nil?
         SidekiqAlive.unregister_current_instance

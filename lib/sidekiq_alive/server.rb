@@ -1,10 +1,12 @@
 require 'sinatra/base'
+
 module SidekiqAlive
   class Server < Sinatra::Base
     set :bind, '0.0.0.0'
     set :port, -> { SidekiqAlive.config.port }
 
     get '/' do
+      SidekiqAlive.logger.info("Alive: #{SidekiqAlive.alive?}")
       if SidekiqAlive.alive?
         status 200
         body 'Alive!'
